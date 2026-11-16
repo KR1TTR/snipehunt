@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Snipe Hunt: a woodland hunting game for ham radio nets, run by net control.">
+<meta name="theme-color" content="#1f6f5c">
+<title>Snipe Hunt — Net Control</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1 id="title">SNIPE HUNT</h1>
+  <nav class="tabs" role="tablist">
+    <button class="on" data-tab="game" role="tab">Game</button>
+    <button data-tab="preamble" role="tab">Preamble</button>
+  </nav>
+  <span class="stat">Game <b id="gameNo">–</b></span>
+  <span class="stat">Round <b id="roundNo">–</b></span>
+  <span class="stat"><span id="shotsLabel">Tries</span> <span class="shots" id="shots"></span></span>
+  <span class="stat">Tonight <b id="record">0–0</b></span>
+  <span class="spacer"></span>
+  <label class="toggle"><input type="checkbox" id="gmView"> GM view</label>
+  <label class="toggle"><input type="checkbox" id="phonetic"> Phonetic calls</label>
+  <button id="exportBtn" title="Download the session log as a .txt file">Export log</button>
+  <button id="settingsBtn">Settings</button>
+  <button id="newGameBtn" class="primary">New game</button>
+</header>
+
+<main id="gameView">
+  <section>
+    <div class="card">
+      <h2>Grid</h2>
+      <div id="board" class="board"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Read on air</h2>
+      <div class="air" id="script"></div>
+      <div class="notice" id="notice"></div>
+    </div>
+    <div class="card" id="controls"></div>
+    <div class="card">
+      <h2>This round</h2>
+      <div class="twolists" id="roundLists"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="card">
+      <h2>Check-ins</h2>
+      <form class="addrow" id="addForm">
+        <input type="text" class="callsign" id="addCall" placeholder="Callsign" autocomplete="off" spellcheck="false" aria-label="Callsign">
+        <input type="text" class="name" id="addName" placeholder="Name" autocomplete="off" aria-label="Name">
+        <button class="primary" type="submit">Add</button>
+      </form>
+      <label class="toggle addopts"><input type="checkbox" id="addAsPlayer"> Mark new check-ins as players</label>
+      <div class="counts" id="counts"></div>
+      <table class="master">
+        <thead><tr><th>In</th><th>Callsign / name</th><th>Player</th><th>No traffic /<br>In-out</th><th></th></tr></thead>
+        <tbody id="master"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="cardhead"><h2>Transcript</h2>
+        <span class="row" style="flex:0 0 auto;gap:6px">
+          <button id="saveLog" class="small" title="Download the session log as a .txt file">Export .txt</button>
+          <button id="newSession" class="small" title="Clear check-ins and the transcript for a new net">New session</button>
+        </span></div>
+      <div class="hint" id="logStatus" style="margin:0 0 8px"></div>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+</main>
+
+<div id="preambleView" hidden>
+  <aside class="card">
+    <h2>Net info</h2>
+    <label class="field">Net name<input id="ni_net" placeholder="e.g. Tri-County Game Net"></label>
+    <label class="field">Net control name<input id="ni_ncs_name" autocomplete="off"></label>
+    <label class="field">Net control callsign<input id="ni_ncs" style="text-transform:uppercase" autocomplete="off" spellcheck="false"></label>
+    <label class="field">Meets<input id="ni_net_day" placeholder="e.g. every Tuesday" autocomplete="off"></label>
+    <label class="field">Time<input id="ni_net_time" placeholder="e.g. 7:30 PM local" autocomplete="off"></label>
+    <label class="field">Frequency<input id="ni_frequency" placeholder="e.g. the 146.940 repeater, PL 100.0" autocomplete="off"></label>
+    <div class="saved" id="niSaved"></div>
+    <h2 style="margin-top:16px">Placeholders</h2>
+    <div class="ph" id="phList"></div>
+    <h2 style="margin-top:16px">Backup</h2>
+    <p class="ph" style="margin:0 0 8px">Your preamble, net info and game settings are kept in this browser.
+      Save a backup file in case the browser's data is cleared, or to move them to another computer.</p>
+    <div class="row">
+      <button id="backupBtn">Save backup</button>
+      <button id="restoreBtn">Restore…</button>
+    </div>
+    <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+  </aside>
+  <section class="card">
+    <div class="cardhead">
+      <h2>Net preamble</h2>
+      <div class="row" style="flex:0 0 auto">
+        <nav class="tabs">
+          <button class="on" data-pmode="read">Read</button>
+          <button data-pmode="edit">Edit</button>
+        </nav>
+      </div>
+    </div>
+    <div id="preambleRead" class="preamble-read"></div>
+    <div id="preambleEdit" hidden>
+      <textarea id="preambleText" spellcheck="true"></textarea>
+      <div class="row" style="margin-top:10px;align-items:center">
+        <span class="saved" id="pSaved" style="flex:2"></span>
+        <button id="pReset" style="flex:0 0 auto">Reset to default</button>
+        <button id="pSave" class="primary" style="flex:0 0 auto">Save</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<dialog id="settingsDlg">
+  <form method="dialog" id="settingsForm">
+    <h2 style="margin-top:0">Game settings</h2>
+    <p>Grid and hazard changes apply to the next new game.</p>
+    <div class="grid">
+      <label for="s_cols">Columns</label><input id="s_cols" type="number" min="2" max="10">
+      <label for="s_rows">Rows</label><input id="s_rows" type="number" min="2" max="10">
+      <label for="s_pits">Pits</label><input id="s_pits" type="number" min="0" max="10">
+      <label for="s_movers">Movers</label><input id="s_movers" type="number" min="0" max="10">
+      <label for="s_shots" id="l_shots">Tries per game</label><input id="s_shots" type="number" min="1" max="20">
+      <label for="s_range" id="l_range">Bag range (squares)</label><input id="s_range" type="number" min="1" max="10">
+      <label for="s_wake">Chance a miss flushes the snipe (%)</label><input id="s_wake" type="number" min="0" max="100" step="5">
+    </div>
+    <div class="row" style="margin-top:16px">
+      <button value="cancel">Cancel</button>
+      <button value="save" class="primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="game.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
