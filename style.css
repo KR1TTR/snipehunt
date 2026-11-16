@@ -60,6 +60,9 @@ main { display: grid; grid-template-columns: minmax(320px, 1.1fr) minmax(320px, 
 .gm.creature { border-color: var(--creature); color: var(--creature); }
 .gm.pit { border-color: var(--pit); color: var(--pit); }
 .gm.mover { border-color: var(--mover); color: var(--mover); }
+.gm.creature { inset: 22%; font-size: clamp(12px, 2vw, 18px); }   /* nests inside a hazard's box */
+.gm.shared { align-items: flex-end; justify-content: flex-end; padding: 0 5px 2px 0;
+  font-size: clamp(10px, 1.4vw, 13px); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: 13px; color: var(--muted); }
 .legend span { display: inline-flex; gap: 6px; align-items: center; }
 .shots { display: inline-flex; gap: 4px; vertical-align: middle; }

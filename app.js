@@ -184,8 +184,15 @@ function renderBoard() {
         const step = g.trail.indexOf(L);
         if (step > 0) inner += `<span class="step">#${step}</span>`;
         if (gm || g.over) {
-          for (const k of ["creature", "pit", "mover"])
-            if (g.hazards[k].includes(L)) inner += `<div class="gm ${k}" title="${esc(S.theme[k + "_name"])}">${KIND[k]}</div>`;
+          // A square can hold more than one thing (the snipe can be flushed into a bog or
+          // the owl's square). The snipe's box is drawn smaller so it nests inside the
+          // hazard's box, and the hazard's letter moves to the corner.
+          const kinds = ["pit", "mover", "creature"].filter(k => g.hazards[k].includes(L));
+          const shared = kinds.length > 1;
+          for (const k of kinds) {
+            const cls = k === "creature" ? "creature" : `${k}${shared ? " shared" : ""}`;
+            inner += `<div class="gm ${cls}" title="${esc(S.theme[k + "_name"])}">${KIND[k]}</div>`;
+          }
         }
         if (here) inner += `<div class="token" title="Hunter">H</div>`;
         const sensed = g.sensed[L];
